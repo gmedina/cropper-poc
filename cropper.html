@@ -13,22 +13,41 @@
 <body>
 <div class="container">
   <div class="row">
+    <div class="col-md-12">
+      <h1>Photos</h1>
+    </div>
+  </div>
+  <div class="row padded">
     <div class="cropper-container col-md-12">
+      <h4>mameshiba.png</h4>
+      <p>Aspect Ratio: <span class="aspect-ratio">Original</span></p>
       <img src="./mameshiba.png">
     </div>
   </div>
-  <div class="cropper-thumbnails row">
+  <div class="cropper-thumbnails row padded">
     <div class="col-md-3">
-      <img src="./mameshiba.png">
+      <h5>Original</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="original">
+      </div>
     </div>
     <div class="col-md-3">
-      <img src="./mameshiba.png">
+      <h5>16:9</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="16:9">
+      </div>
     </div>
     <div class="col-md-3">
-      <img src="./mameshiba.png">
+      <h5>4:3</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="4:3">
+      </div>
     </div>
     <div class="col-md-3">
-      <img src="./mameshiba.png">
+      <h5>3:2</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="3:2">
+      </div>
     </div>
   </div>
 </div>
