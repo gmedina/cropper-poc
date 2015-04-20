@@ -21,6 +21,7 @@ $(document).ready(function () {
   */
   var croppedImg;
   var cropperContainer = $('.cropper-container');
+  var $currentThumb;
 
   function getAspectRatio($img) {
     var ar = $img.data('aspect-ratio').split(':');
@@ -33,6 +34,7 @@ $(document).ready(function () {
 
   function initCropper($img, $thumb) {
     var aspectRatio = getAspectRatio($thumb); 
+    $currentThumb = $thumb;
 
     if (!croppedImg) {
       croppedImg = cropperContainer.find('img').cropper({
@@ -44,8 +46,26 @@ $(document).ready(function () {
     if (aspectRatio == 'original') {
       croppedImg.cropper('setAspectRatio', null);
       croppedImg.on('built.cropper', function () {
-        //croppedImg.cropper('clear');
-      });
+        console.log('initialized');
+        croppedImg.on('dragmove.cropper', function (evt) {
+          var $clippedImg = $currentThumb.parent().find('.crop-preview img');
+          var data = croppedImg.cropper('getData');
+          var imageData = croppedImg.cropper('getImageData');
+          var path = '';
+          var width = $currentThumb.width();
+          var height = $currentThumb.height();
+          var top = data.y * (height / imageData.naturalHeight);
+          var right = (imageData.naturalWidth - (data.x + data.width)) * (width / imageData.naturalWidth);
+          var bottom = (imageData.naturalHeight - (data.y + data.height)) * (height / imageData.naturalHeight);
+          var left = data.x * (width / imageData.naturalWidth);
+          console.log(croppedImg.cropper('getData'));
+          top = (100 * top) / height;
+          right = (100 * right) / width;
+          bottom = (100 * bottom) / height;
+          left = (100 * left) / width;
+          $clippedImg.css('-webkit-clip-path', 'inset(' + top + '% ' + right + '% ' + bottom + '% ' + left + '%)');
+        }.bind(this));
+      }.bind(this));
     } else {
       croppedImg.cropper('setAspectRatio', aspectRatio);
     }
