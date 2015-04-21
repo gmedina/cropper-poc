@@ -2,6 +2,7 @@ $(document).ready(function () {
   var croppedImg;
   var cropperContainer = $('.cropper-container');
   var $currentThumb;
+  var $focalPointCheck = $('input[type="checkbox"]');
 
   function getAspectRatio($img) {
     var ar = $img.data('aspect-ratio').split(':');
@@ -10,6 +11,30 @@ $(document).ready(function () {
     } else {
       return 'original';
     }
+  }
+
+  function updateLivePreviewPosition($thumb, cropper) {
+    var $clippedImg = $thumb.parent().find('.crop-preview img');
+    var data = cropper.cropper('getData');
+    var imageData = cropper.cropper('getImageData');
+    var path = '';
+    var width = $thumb.width();
+    var height = $thumb.height();
+    var top = data.y * (height / imageData.naturalHeight);
+    var right = (imageData.naturalWidth - (data.x + data.width)) * (width / imageData.naturalWidth);
+    var bottom = (imageData.naturalHeight - (data.y + data.height)) * (height / imageData.naturalHeight);
+    var left = data.x * (width / imageData.naturalWidth);
+    top = (100 * top) / height;
+    right = (100 * right) / width;
+    bottom = (100 * bottom) / height;
+    left = (100 * left) / width;
+    $clippedImg.css('-webkit-clip-path', 'inset(' + top + '% ' + right + '% ' + bottom + '% ' + left + '%)');
+
+    var cropBoxData = cropper.cropper('getCropBoxData');
+    Object.keys(cropBoxData).forEach(function (key) {
+      $thumb.data('cropper-' + key, cropBoxData[key]);
+    });
+    $thumb.data('update', true);
   }
 
   function initCropper($img, $thumb) {
@@ -28,42 +53,25 @@ $(document).ready(function () {
       croppedImg.on('built.cropper', function () {
         console.log('initialized');
         croppedImg.on('dragstart.cropper', function (evt) {
+          if (!$focalPointCheck.is(':checked')) {
+            return;
+          }
           var mouseX = evt.originalEvent.offsetX;
           var mouseY = evt.originalEvent.offsetY;
           var cropBoxData = croppedImg.cropper('getCropBoxData');
           var left = mouseX - (cropBoxData.width / 2);
           var top = mouseY - (cropBoxData.height / 2);
-          console.log('mouse', mouseX, mouseY, left, top);
-
           croppedImg.cropper('setCropBoxData', {
             top: top,
             left: left
           });
-
+          updateLivePreviewPosition($currentThumb, croppedImg);
         });
         croppedImg.on('dragmove.cropper', function (evt) {
-          var $clippedImg = $currentThumb.parent().find('.crop-preview img');
-          var data = croppedImg.cropper('getData');
-          var imageData = croppedImg.cropper('getImageData');
-          var path = '';
-          var width = $currentThumb.width();
-          var height = $currentThumb.height();
-          var top = data.y * (height / imageData.naturalHeight);
-          var right = (imageData.naturalWidth - (data.x + data.width)) * (width / imageData.naturalWidth);
-          var bottom = (imageData.naturalHeight - (data.y + data.height)) * (height / imageData.naturalHeight);
-          var left = data.x * (width / imageData.naturalWidth);
-          console.log(croppedImg.cropper('getData'));
-          top = (100 * top) / height;
-          right = (100 * right) / width;
-          bottom = (100 * bottom) / height;
-          left = (100 * left) / width;
-          $clippedImg.css('-webkit-clip-path', 'inset(' + top + '% ' + right + '% ' + bottom + '% ' + left + '%)');
-
-          var cropBoxData = croppedImg.cropper('getCropBoxData');
-          Object.keys(cropBoxData).forEach(function (key) {
-            $currentThumb.data('cropper-' + key, cropBoxData[key]);
-          });
-          $currentThumb.data('update', true);
+          if ($focalPointCheck.is(':checked')) {
+            return;
+          }
+          updateLivePreviewPosition($currentThumb, croppedImg);
         }.bind(this));
       }.bind(this));
     } else {
