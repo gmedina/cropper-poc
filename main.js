@@ -1,24 +1,4 @@
 $(document).ready(function () {
-  /*
-  var mainImg = $('.cropper-container > img').cropper({
-    aspectRatio: 16 / 9,
-    zoomable: false
-  });
-  var thumbs = $('.col-md-3 > img').cropper({
-    aspectRatio: 16 / 9,
-    zoomable: false
-  });
-
-  mainImg.on('dragend.cropper', function (e) {
-    console.log(mainImg.cropper('getData'));
-  });
-
-  setTimeout(function () {
-    thumbs.on('dragend.cropper', function (e) {
-      console.log($(this).cropper('getData'));
-    });
-  }, 2000);
-  */
   var croppedImg;
   var cropperContainer = $('.cropper-container');
   var $currentThumb;
@@ -50,7 +30,16 @@ $(document).ready(function () {
         croppedImg.on('dragstart.cropper', function (evt) {
           var mouseX = evt.originalEvent.offsetX;
           var mouseY = evt.originalEvent.offsetY;
-          console.log('mouse', mouseX, mouseY);
+          var cropBoxData = croppedImg.cropper('getCropBoxData');
+          var left = mouseX - (cropBoxData.width / 2);
+          var top = mouseY - (cropBoxData.height / 2);
+          console.log('mouse', mouseX, mouseY, left, top);
+
+          croppedImg.cropper('setCropBoxData', {
+            top: top,
+            left: left
+          });
+
         });
         croppedImg.on('dragmove.cropper', function (evt) {
           var $clippedImg = $currentThumb.parent().find('.crop-preview img');
