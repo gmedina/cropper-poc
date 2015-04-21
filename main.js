@@ -37,6 +37,25 @@ $(document).ready(function () {
     $thumb.data('update', true);
   }
 
+  function updateLivePreviewCropper($thumb, $cropper) {
+    var smallCropBox = $thumb.cropper('getCropBoxData');
+    var cropBox = $cropper.cropper('getCropBoxData');
+    var smallImageData = $thumb.cropper('getImageData');
+    var imageData = $cropper.cropper('getImageData');
+
+    $thumb.cropper('setCropBoxData', {
+      left: cropBox.left * (smallImageData.width / imageData.width),
+      top: cropBox.top * (smallImageData.height / imageData.height),
+      width: cropBox.width * (smallImageData.width / imageData.width),
+      height: cropBox.height * (smallImageData.height / imageData.height)
+    });
+
+    Object.keys(cropBox).forEach(function (key) {
+      $thumb.data('cropper-' + key, cropBox[key]);
+    });
+    $thumb.data('update', true);
+  }
+
   function initCropper($img, $thumb) {
     var aspectRatio = getAspectRatio($thumb); 
     $currentThumb = $thumb;
@@ -65,13 +84,15 @@ $(document).ready(function () {
             top: top,
             left: left
           });
-          updateLivePreviewPosition($currentThumb, croppedImg);
+          //updateLivePreviewPosition($currentThumb, croppedImg);
+          updateLivePreviewCropper($currentThumb, croppedImg);
         });
         croppedImg.on('dragmove.cropper', function (evt) {
           if ($focalPointCheck.is(':checked')) {
             return;
           }
-          updateLivePreviewPosition($currentThumb, croppedImg);
+          //updateLivePreviewPosition($currentThumb, croppedImg);
+          updateLivePreviewCropper($currentThumb, croppedImg);
         }.bind(this));
       }.bind(this));
     } else {
@@ -119,13 +140,6 @@ $(document).ready(function () {
     
     $clippedImg.css('-webkit-clip-path', 'inset(' + yPercent + '% ' + xPercent + '%)');
 
-    console.log('==================');
-    console.log('y', y);
-    console.log('yPercent', yPercent);
-    console.log('x', x);
-    console.log('xPercent', xPercent);
-
-
     $parent.append('<div class="mask"></div>');
     $parent.append('<div class="crop-preview"></div>');
     $parent.find('.crop-preview').append($clippedImg);
@@ -146,7 +160,13 @@ $(document).ready(function () {
   });
 
   thumbs.each(function (i, thumb) {
-    addMask($(thumb));
+    var $thumb = $(thumb);
+    $thumb.cropper({
+      zoomable: false,
+      autoCropArea: 1,
+      aspectRatio: getAspectRatio($thumb)
+    });
+    //addMask($(thumb));
   });
 
 
