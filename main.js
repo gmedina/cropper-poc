@@ -69,10 +69,25 @@ $(document).ready(function () {
           bottom = (100 * bottom) / height;
           left = (100 * left) / width;
           $clippedImg.css('-webkit-clip-path', 'inset(' + top + '% ' + right + '% ' + bottom + '% ' + left + '%)');
+
+          var cropBoxData = croppedImg.cropper('getCropBoxData');
+          Object.keys(cropBoxData).forEach(function (key) {
+            $currentThumb.data('cropper-' + key, cropBoxData[key]);
+          });
+          $currentThumb.data('update', true);
         }.bind(this));
       }.bind(this));
     } else {
       croppedImg.cropper('setAspectRatio', aspectRatio);
+      if ($currentThumb.data('update')) {
+        var cropBoxData = {
+          top: $currentThumb.data('cropper-top'),
+          left: $currentThumb.data('cropper-left'),
+          width: $currentThumb.data('cropper-width'),
+          height: $currentThumb.data('cropper-height')
+        };
+        croppedImg.cropper('setCropBoxData', cropBoxData);
+      }
     }
   }
 
