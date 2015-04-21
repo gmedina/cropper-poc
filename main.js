@@ -47,6 +47,11 @@ $(document).ready(function () {
       croppedImg.cropper('setAspectRatio', null);
       croppedImg.on('built.cropper', function () {
         console.log('initialized');
+        croppedImg.on('dragstart.cropper', function (evt) {
+          console.log(evt.originalEvent);
+          var mouseX = evt.originalEvent.offsetX;
+          var mouseY = evt.originalEvent.offsetY;
+        });
         croppedImg.on('dragmove.cropper', function (evt) {
           var $clippedImg = $currentThumb.parent().find('.crop-preview img');
           var data = croppedImg.cropper('getData');
