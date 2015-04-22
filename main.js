@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var croppedImg;
-  var cropperContainer = $('.cropper-container');
+  var cropperContainer = $('.main-cropper-container');
   var $currentThumb;
   var $focalPointCheck = $('input[type="checkbox"]');
   var thumbs = $('.thumb-container > img');
@@ -50,8 +50,9 @@ $(document).ready(function () {
       width: cropBox.width * (smallImageData.width / imageData.width),
       height: cropBox.height * (smallImageData.height / imageData.height)
     };
-
+    $thumb.cropper('enable');
     $thumb.cropper('setCropBoxData', pos);
+    $thumb.cropper('disable');
   }
 
   function updateLivePreviewFocalPoint($thumb, $cropper, evt) {

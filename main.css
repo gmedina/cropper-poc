@@ -15,6 +15,11 @@ img {
   position: relative;
 }
 
+.thumb-container .cropper-disabled .cropper-crop,
+.thumb-container .cropper-disabled .cropper-face {
+  cursor: pointer;
+}
+
 .mask {
   position: absolute;
   top: 0;
