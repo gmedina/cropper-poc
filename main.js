@@ -14,6 +14,7 @@ $(document).ready(function () {
     }
   }
 
+  // this was using clip path but decide just to go with multiple cropper instances
   function updateLivePreviewPosition($thumb, cropper) {
     var $clippedImg = $thumb.parent().find('.crop-preview img');
     var data = cropper.cropper('getData');
@@ -51,11 +52,6 @@ $(document).ready(function () {
     };
 
     $thumb.cropper('setCropBoxData', pos);
-
-    Object.keys(cropBox).forEach(function (key) {
-      $thumb.data('cropper-' + key, cropBox[key]);
-    });
-    $thumb.data('update', true);
   }
 
   function updateLivePreviewFocalPoint($thumb, $cropper, evt) {
@@ -76,26 +72,25 @@ $(document).ready(function () {
       top: top 
     });
     $thumb.cropper('disable');
-    Object.keys(cropBox).forEach(function (key) {
-      $thumb.data('cropper-' + key, cropBox[key]);
-    });
-    $thumb.data('update', true);
   }
 
   function initCropper($img, $thumb) {
     var aspectRatio = getAspectRatio($thumb); 
-    
     $currentThumb = $thumb;
 
     if (!croppedImg) {
       croppedImg = cropperContainer.find('img').cropper({
         zoomable: false,
-        autoCropArea: 1
+        autoCropArea: 1,
+        built: function () {
+          croppedImg.cropper('disable');
+        }
       });
     }
 
     if (aspectRatio == 'original') {
       croppedImg.cropper('setAspectRatio', null);
+      croppedImg.cropper('disable');
       croppedImg.on('built.cropper', function () {
         console.log('initialized');
         croppedImg.on('dragstart.cropper', function (evt) {
@@ -126,21 +121,28 @@ $(document).ready(function () {
         }.bind(this));
       }.bind(this));
     } else {
-   
+      croppedImg.cropper('enable');
       croppedImg.cropper('setAspectRatio', aspectRatio);
-
-      
-
-      if ($currentThumb.data('update')) {
-        var cropBoxData = {
-          top: $currentThumb.data('cropper-top'),
-          left: $currentThumb.data('cropper-left'),
-          width: $currentThumb.data('cropper-width'),
-          height: $currentThumb.data('cropper-height')
-        };
-        croppedImg.cropper('setCropBoxData', cropBoxData);
-      }
+      updateBigCropperPosition($currentThumb, croppedImg);
     }
+  }
+
+  function updateBigCropperPosition ($thumb, $cropper) {
+    var smallCropBoxData = $thumb.cropper('getCropBoxData');
+    var smallImageData = $thumb.cropper('getImageData');
+    var imageData = $cropper.cropper('getImageData');
+    var left = smallCropBoxData.left * (imageData.width / smallImageData.width);
+    var top = smallCropBoxData.top * (imageData.height / smallImageData.height);
+    var width = smallCropBoxData.width * (imageData.width / smallImageData.width);
+    var height = smallCropBoxData.height * (imageData.height / smallImageData.height);
+    var cropBoxData = {
+      top: top,
+      left: left,
+      height: height,
+      width: width
+    };
+
+    $cropper.cropper('setCropBoxData', cropBoxData);
   }
 
   function addMask($img) {
@@ -197,6 +199,8 @@ $(document).ready(function () {
       zoomable: false,
       autoCropArea: 1,
       aspectRatio: getAspectRatio($thumb),
+      guides: false,
+      resizable: false,
       built: function () {
         $thumb.cropper('disable');
       }
