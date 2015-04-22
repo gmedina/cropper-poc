@@ -3,6 +3,7 @@ $(document).ready(function () {
   var cropperContainer = $('.cropper-container');
   var $currentThumb;
   var $focalPointCheck = $('input[type="checkbox"]');
+  var thumbs = $('.thumb-container > img');
 
   function getAspectRatio($img) {
     var ar = $img.data('aspect-ratio').split(':');
@@ -42,14 +43,39 @@ $(document).ready(function () {
     var cropBox = $cropper.cropper('getCropBoxData');
     var smallImageData = $thumb.cropper('getImageData');
     var imageData = $cropper.cropper('getImageData');
-
-    $thumb.cropper('setCropBoxData', {
+    var pos = {
       left: cropBox.left * (smallImageData.width / imageData.width),
       top: cropBox.top * (smallImageData.height / imageData.height),
       width: cropBox.width * (smallImageData.width / imageData.width),
       height: cropBox.height * (smallImageData.height / imageData.height)
-    });
+    };
 
+    $thumb.cropper('setCropBoxData', pos);
+
+    Object.keys(cropBox).forEach(function (key) {
+      $thumb.data('cropper-' + key, cropBox[key]);
+    });
+    $thumb.data('update', true);
+  }
+
+  function updateLivePreviewFocalPoint($thumb, $cropper, evt) {
+    console.log($thumb.data('aspect-ratio'));
+    var mouseX = evt.originalEvent.offsetX;
+    var mouseY = evt.originalEvent.offsetY;
+    var smallImageData = $thumb.cropper('getImageData');
+    var cropBox = $cropper.cropper('getCropBoxData');
+    var smallCropBox = $thumb.cropper('getCropBoxData');
+    var imageData = $cropper.cropper('getImageData');
+    var relativeMouseX = mouseX * (smallImageData.width / imageData.width);
+    var relativeMouseY = mouseY * (smallImageData.height / imageData.height);
+    var left = relativeMouseX - (smallCropBox.width / 2);
+    var top = relativeMouseY - (smallCropBox.height / 2);
+    $thumb.cropper('enable');
+    $thumb.cropper('setCropBoxData', {
+      left: left,
+      top: top 
+    });
+    $thumb.cropper('disable');
     Object.keys(cropBox).forEach(function (key) {
       $thumb.data('cropper-' + key, cropBox[key]);
     });
@@ -58,6 +84,7 @@ $(document).ready(function () {
 
   function initCropper($img, $thumb) {
     var aspectRatio = getAspectRatio($thumb); 
+    
     $currentThumb = $thumb;
 
     if (!croppedImg) {
@@ -72,6 +99,7 @@ $(document).ready(function () {
       croppedImg.on('built.cropper', function () {
         console.log('initialized');
         croppedImg.on('dragstart.cropper', function (evt) {
+          $currentThumb.cropper('enable');
           if (!$focalPointCheck.is(':checked')) {
             return;
           }
@@ -85,18 +113,24 @@ $(document).ready(function () {
             left: left
           });
           //updateLivePreviewPosition($currentThumb, croppedImg);
-          updateLivePreviewCropper($currentThumb, croppedImg);
-        });
+          thumbs.each(function (i, thumb) {
+            updateLivePreviewFocalPoint($(thumb), croppedImg, evt);
+          });
+        }.bind(this));
         croppedImg.on('dragmove.cropper', function (evt) {
-          if ($focalPointCheck.is(':checked')) {
-            return;
-          }
           //updateLivePreviewPosition($currentThumb, croppedImg);
           updateLivePreviewCropper($currentThumb, croppedImg);
         }.bind(this));
+        croppedImg.on('dragend.cropper', function (evt) {
+          $currentThumb.cropper('disable');
+        }.bind(this));
       }.bind(this));
     } else {
+   
       croppedImg.cropper('setAspectRatio', aspectRatio);
+
+      
+
       if ($currentThumb.data('update')) {
         var cropBoxData = {
           top: $currentThumb.data('cropper-top'),
@@ -145,8 +179,6 @@ $(document).ready(function () {
     $parent.find('.crop-preview').append($clippedImg);
     
   }
-  
-  var thumbs = $('.thumb-container > img');
 
   $('.thumb-container').on('click', function (evt) {
     var thumb = $(this).find('> img');
@@ -164,11 +196,14 @@ $(document).ready(function () {
     $thumb.cropper({
       zoomable: false,
       autoCropArea: 1,
-      aspectRatio: getAspectRatio($thumb)
+      aspectRatio: getAspectRatio($thumb),
+      built: function () {
+        $thumb.cropper('disable');
+      }
     });
     //addMask($(thumb));
   });
 
 
-  initCropper(cropperContainer.find('img'), $('img[data-aspect-ratio="original"]'));
+  initCropper(cropperContainer.find('div > img'), $('img[data-aspect-ratio="original"]'));
 });
