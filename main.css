@@ -1,3 +1,14 @@
+.v2 .preview-container {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.v2 .cropper-thumbnails {
+  visibility: hidden;
+}
+
 img {
   width: 100%;
 }

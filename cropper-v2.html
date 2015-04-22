@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Copilot</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link href="./bower_components/cropper/dist/cropper.css" rel="stylesheet">
+<link href="./main.css" rel="stylesheet">
+</head>
+<body class="v2">
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Photos</h1>
+    </div>
+  </div>
+  <div class="row padded">
+    <div class="main-cropper-container col-md-6">
+      <h4>mameshiba.png</h4>
+      <p>Aspect Ratio: <span class="aspect-ratio">Original</span></p>
+      <div>
+        <img src="./mameshiba.png">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h4>Metadata</h4>
+      <p>&nbsp;</p>
+      <p>
+        <label>Title</label>
+        <input type="text" class="form-control" value="mameshiba.png">
+      </p>
+      <p>
+        <label>Credits</label>
+        <input type="text" class="form-control">
+      </p>
+      <p>
+        <label>Description</label>
+        <input type="text" class="form-control">
+      </p>
+      <p>
+        <label>Focal Point</label>
+        <input type="checkbox">
+      </p>
+      <p>
+        <button class="btn btn-default">Save</button>
+      </p>
+    </div>
+  </div>
+  <div class="cropper-previews row padded">
+    <div class="col-md-3">
+      <h5>Original</h5>
+      <div class="preview-container" data-aspect-ratio="original">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>1:1</h5>
+      <div class="preview-container" data-aspect-ratio="1:1">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>16:9</h5>
+      <div class="preview-container" data-aspect-ratio="16:9">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>4:3</h5>
+      <div class="preview-container" data-aspect-ratio="4:3">
+      </div>
+    </div>
+  </div>
+  <div class="cropper-thumbnails row padded">
+    <div class="col-md-3">
+      <h5>Original</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="original">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>1:1</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="1:1">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>16:9</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="16:9">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <h5>4:3</h5>
+      <div class="thumb-container">
+        <img src="./mameshiba.png" data-aspect-ratio="4:3">
+      </div>
+    </div>
+  </div>
+</div>
+<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="./bower_components/cropper/dist/cropper.js"></script>
+<script src="./main-v2.js"></script>
+</body>
+</html>
