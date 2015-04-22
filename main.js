@@ -84,42 +84,45 @@ $(document).ready(function () {
         autoCropArea: 1,
         built: function () {
           croppedImg.cropper('disable');
+          console.log('initialized');
+          croppedImg.on('dragstart.cropper', function (evt) {
+            $currentThumb.cropper('enable');
+            if (!$focalPointCheck.is(':checked')) {
+              return;
+            }
+            var mouseX = evt.originalEvent.offsetX;
+            var mouseY = evt.originalEvent.offsetY;
+            var cropBoxData = croppedImg.cropper('getCropBoxData');
+            var left = mouseX - (cropBoxData.width / 2);
+            var top = mouseY - (cropBoxData.height / 2);
+            croppedImg.cropper('setCropBoxData', {
+              top: top,
+              left: left
+            });
+            //updateLivePreviewPosition($currentThumb, croppedImg);
+            thumbs.each(function (i, thumb) {
+              updateLivePreviewFocalPoint($(thumb), croppedImg, evt);
+            });
+          }.bind(this));
+          croppedImg.on('dragmove.cropper', function (evt) {
+            //updateLivePreviewPosition($currentThumb, croppedImg);
+            updateLivePreviewCropper($currentThumb, croppedImg);
+          }.bind(this));
+          croppedImg.on('dragend.cropper', function (evt) {
+            $currentThumb.cropper('disable');
+          }.bind(this));
         }
       });
     }
+  }
+
+  function onSmallCropperClick ($thumb) {
+    var aspectRatio = getAspectRatio($thumb); 
+    $currentThumb = $thumb;
 
     if (aspectRatio == 'original') {
       croppedImg.cropper('setAspectRatio', null);
       croppedImg.cropper('disable');
-      croppedImg.on('built.cropper', function () {
-        console.log('initialized');
-        croppedImg.on('dragstart.cropper', function (evt) {
-          $currentThumb.cropper('enable');
-          if (!$focalPointCheck.is(':checked')) {
-            return;
-          }
-          var mouseX = evt.originalEvent.offsetX;
-          var mouseY = evt.originalEvent.offsetY;
-          var cropBoxData = croppedImg.cropper('getCropBoxData');
-          var left = mouseX - (cropBoxData.width / 2);
-          var top = mouseY - (cropBoxData.height / 2);
-          croppedImg.cropper('setCropBoxData', {
-            top: top,
-            left: left
-          });
-          //updateLivePreviewPosition($currentThumb, croppedImg);
-          thumbs.each(function (i, thumb) {
-            updateLivePreviewFocalPoint($(thumb), croppedImg, evt);
-          });
-        }.bind(this));
-        croppedImg.on('dragmove.cropper', function (evt) {
-          //updateLivePreviewPosition($currentThumb, croppedImg);
-          updateLivePreviewCropper($currentThumb, croppedImg);
-        }.bind(this));
-        croppedImg.on('dragend.cropper', function (evt) {
-          $currentThumb.cropper('disable');
-        }.bind(this));
-      }.bind(this));
     } else {
       croppedImg.cropper('enable');
       croppedImg.cropper('setAspectRatio', aspectRatio);
@@ -190,7 +193,7 @@ $(document).ready(function () {
     thumbs.removeClass('selected');
     thumb.addClass('selected');
 
-    initCropper(cropperContainer.find('img'), thumb);
+    onSmallCropperClick(thumb);
   });
 
   thumbs.each(function (i, thumb) {
