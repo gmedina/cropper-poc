@@ -117,9 +117,9 @@ $(document).ready(function () {
     }
   }
 
-  function onSmallCropperClick ($thumb) {
+  function onSmallCropperClick ($thumb, $overrideThumb) {
     var aspectRatio = getAspectRatio($thumb); 
-    $currentThumb = $thumb;
+    $currentThumb = $overrideThumb || $thumb;
 
     if (aspectRatio == 'original') {
       croppedImg.cropper('setAspectRatio', null);
@@ -188,23 +188,35 @@ $(document).ready(function () {
 
   $('.thumb-container').on('click', function (evt) {
     var thumb = $(this).find('> img');
-    var aspectRatio = getAspectRatio(thumb); 
-
     cropperContainer.find('.aspect-ratio').html(thumb.data('aspect-ratio'));
-    thumbs.removeClass('selected');
-    thumb.addClass('selected');
-
+    thumbs.parent().removeClass('selected');
+    $(this).addClass('selected');
     onSmallCropperClick(thumb);
+  });
+
+  var $previews = $('.preview-container');
+  $previews.on('click', function (evt) {
+    var $preview = $(this);
+    var thumb = thumbs.filter(function (i, aThumb) {
+      return $(aThumb).data('aspect-ratio') == $preview.data('aspect-ratio');
+    })[0];
+    cropperContainer.find('.aspect-ratio').html($preview.data('aspect-ratio'));
+    $previews.removeClass('selected');
+    $preview.addClass('selected');
+    onSmallCropperClick($preview, $(thumb));
   });
 
   thumbs.each(function (i, thumb) {
     var $thumb = $(thumb);
+    var previewPath = '.preview-container[data-aspect-ratio="' + $thumb.data('aspect-ratio') + '"]';
+    console.log(previewPath);
     $thumb.cropper({
       zoomable: false,
       autoCropArea: 1,
       aspectRatio: getAspectRatio($thumb),
       guides: false,
       resizable: false,
+      preview: previewPath,
       built: function () {
         $thumb.cropper('disable');
       }

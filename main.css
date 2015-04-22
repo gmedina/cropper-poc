@@ -1,3 +1,36 @@
+.cropper-previews {
+  display: none;
+}
+.v2 .cropper-previews {
+  display: block;
+}
+
+.v2 .flex-container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -flex-direction: row;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.v2 .preview-flex {
+  -webkit-flex: 1;
+  flex: 1;
+  max-width: 22%;
+}
+
+.v2 .preview-container {
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+.v2 .cropper-thumbnails {
+  visibility: hidden;
+}
+
 img {
   width: 100%;
 }
@@ -13,6 +46,11 @@ img {
 
 .thumb-container {
   position: relative;
+}
+
+.thumb-container .cropper-disabled .cropper-crop,
+.thumb-container .cropper-disabled .cropper-face {
+  cursor: pointer;
 }
 
 .mask {
